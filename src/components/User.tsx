@@ -4,28 +4,12 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { TeamCard } from "./common/team-card";
 import { TeamCardSkeleton } from "./common/team-card-skeleton";
-import {
-  ChevronDown,
-  Folder,
-  LayoutDashboard,
-  LogOut,
-  Search,
-  Settings,
-  Users,
-} from "lucide-react";
+import { Folder, LayoutDashboard, Search, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { motion } from "framer-motion";
 
 interface Team {
   topic: string;
@@ -74,23 +58,37 @@ export default function UserDashboard() {
   );
 
   return (
-    <div className="flex min-h-screen flex-col bg-black text-white">
-      {/* Header */}
-      <header className="sticky top-0 z-10 border-b border-gray-800 bg-black/70 backdrop-blur-md">
+    <motion.div
+      className="flex min-h-screen flex-col bg-gradient-to-br from-[#0f0f0f] via-[#1c1c1c] to-[#0f0f0f] text-white"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6 }}
+    >
+      <header className="sticky top-0 z-10 border-b border-zinc-800 bg-black/60 backdrop-blur-md">
         <div className="container flex h-16 items-center justify-between py-4">
-          <div className="flex items-center gap-2">
+          <motion.div
+            className="flex items-center gap-3"
+            initial={{ x: -20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
             <LayoutDashboard className="h-6 w-6 text-purple-500" />
-            <h1 className="text-xl font-semibold text-white">TeamSpace</h1>
-          </div>
+            <h1 className="text-xl font-bold tracking-tight">TeamSpace</h1>
+          </motion.div>
         </div>
       </header>
 
       <div className="container mx-auto flex-1 py-6">
         <div className="flex flex-col gap-6 md:flex-row">
           {/* Sidebar */}
-          <aside className="md:w-72 shrink-0 border-r border-gray-800 pr-6">
+          <motion.aside
+            className="md:w-72 shrink-0 border-r border-zinc-800 pr-6"
+            initial={{ x: -50, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.4 }}
+          >
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-white">Your Teams</h2>
+              <h2 className="text-xl font-semibold">Your Teams</h2>
               <Badge
                 variant="outline"
                 className="bg-zinc-800 text-xs text-purple-400 border-purple-500"
@@ -127,7 +125,11 @@ export default function UserDashboard() {
               <ScrollArea className="h-[calc(100vh-220px)] pr-2">
                 <ul className="space-y-2">
                   {filteredTeams.map((team, index) => (
-                    <li key={index}>
+                    <motion.li
+                      key={index}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
                       <button
                         onClick={() => setSelectedTeamIndex(index)}
                         className={cn(
@@ -156,15 +158,20 @@ export default function UserDashboard() {
                           </span>
                         </div>
                       </button>
-                    </li>
+                    </motion.li>
                   ))}
                 </ul>
               </ScrollArea>
             )}
-          </aside>
+          </motion.aside>
 
           {/* Main Content */}
-          <section className="flex-1">
+          <motion.section
+            className="flex-1"
+            initial={{ x: 50, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+          >
             {loading ? (
               <TeamCardSkeleton />
             ) : userTeams.length === 0 ? (
@@ -174,16 +181,21 @@ export default function UserDashboard() {
             ) : (
               <TeamCard team={userTeams[selectedTeamIndex]} />
             )}
-          </section>
+          </motion.section>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
 function EmptyTeamsState() {
   return (
-    <div className="flex flex-col items-center justify-center p-8 text-center border border-dashed rounded-lg bg-zinc-900 border-zinc-700 text-gray-400">
+    <motion.div
+      className="flex flex-col items-center justify-center p-8 text-center border border-dashed rounded-lg bg-zinc-900 border-zinc-700 text-gray-400"
+      initial={{ scale: 0.95, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ delay: 0.2 }}
+    >
       <div className="flex h-20 w-20 items-center justify-center rounded-full bg-purple-950 mb-4">
         <Users className="h-10 w-10 text-purple-400" />
       </div>
@@ -192,6 +204,6 @@ function EmptyTeamsState() {
         You aren't part of any teams yet. Teams will appear here once you've
         been added to them.
       </p>
-    </div>
+    </motion.div>
   );
 }

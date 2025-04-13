@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,7 @@ import {
   MoreHorizontal,
   RefreshCw,
   Users,
+  Plus,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -45,19 +47,22 @@ interface TeamCardProps {
 
 export function TeamCard({ team }: TeamCardProps) {
   return (
-    <div className="space-y-6">
+    <motion.div
+      className="space-y-6 bg-gradient-to-b from-[#121212] to-[#1a1a1a] p-6 rounded-xl"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
       <div className="flex items-center justify-between">
-        <div>
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-md bg-primary/10 text-primary">
-              <Users className="h-5 w-5" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold">{team.topic}</h1>
-              <p className="text-muted-foreground">
-                Managed by {team.managerName}
-              </p>
-            </div>
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-md bg-[#2c2c2c] text-primary">
+            <Users className="h-5 w-5" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-white">{team.topic}</h1>
+            <p className="text-muted-foreground text-sm">
+              Managed by {team.managerName}
+            </p>
           </div>
         </div>
 
@@ -66,53 +71,46 @@ export function TeamCard({ team }: TeamCardProps) {
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 rounded-full"
+              className="h-8 w-8 rounded-full text-muted-foreground hover:text-white"
             >
               <MoreHorizontal className="h-4 w-4" />
-              <span className="sr-only">More options</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"
-            className="w-48 bg-card border-border"
+            className="w-48 bg-[#222] border-none text-sm"
           >
             <DropdownMenuItem>
               <RefreshCw className="mr-2 h-4 w-4" />
-              <span>Refresh Data</span>
+              Refresh Data
             </DropdownMenuItem>
             <DropdownMenuItem>
               <CalendarDays className="mr-2 h-4 w-4" />
-              <span>Schedule Meeting</span>
+              Schedule Meeting
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
 
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 bg-background/30 p-1">
-          <TabsTrigger
-            value="overview"
-            className="rounded-md data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
-          >
-            Overview
-          </TabsTrigger>
-          <TabsTrigger
-            value="chat"
-            className="rounded-md data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
-          >
-            Chat
-          </TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2 bg-[#1e1e1e] p-1 rounded-lg border-none">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="chat">Chat</TabsTrigger>
         </TabsList>
 
+        {/* --- Overview --- */}
         <TabsContent value="overview" className="mt-6">
           <div className="grid gap-6 md:grid-cols-2">
-            <Card className="bg-card border-border overflow-hidden">
-              <CardHeader className="bg-card/50 pb-3">
+            {/* Info Card */}
+            <Card className="bg-[#1a1a1a] text-white border-none shadow-sm">
+              <CardHeader className="pb-3">
                 <CardTitle className="text-base font-medium flex items-center gap-2">
                   <FileSpreadsheet className="h-4 w-4 text-primary" />
                   Team Information
                 </CardTitle>
-                <CardDescription>Basic details about your team</CardDescription>
+                <CardDescription className="text-muted-foreground">
+                  Basic details about your team
+                </CardDescription>
               </CardHeader>
               <CardContent className="pt-4 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
@@ -120,7 +118,7 @@ export function TeamCard({ team }: TeamCardProps) {
                     <p className="text-xs text-muted-foreground">Group ID</p>
                     <Badge
                       variant="outline"
-                      className="bg-primary/5 border-primary/20 text-primary font-normal"
+                      className="bg-[#2c2c2c] border-none text-white"
                     >
                       {team.groupId}
                     </Badge>
@@ -142,13 +140,13 @@ export function TeamCard({ team }: TeamCardProps) {
                   </div>
                 </div>
 
-                <Separator className="my-2 bg-border/50" />
+                <Separator className="my-2 bg-[#333]" />
 
                 <div className="space-y-3">
                   {team.spreadsheetUrl && (
                     <Button
                       variant="outline"
-                      className="w-full justify-start gap-2 bg-card border-border hover:bg-card/80"
+                      className="w-full justify-start gap-2 bg-[#222] border-none hover:bg-[#2c2c2c]"
                       asChild
                     >
                       <a
@@ -161,11 +159,7 @@ export function TeamCard({ team }: TeamCardProps) {
                       </a>
                     </Button>
                   )}
-
-                  <Button
-                    className="w-full gap-2"
-                    onClick={() => alert("Update Status")}
-                  >
+                  <Button className="w-full gap-2 bg-primary text-white">
                     <RefreshCw className="h-4 w-4" />
                     Update Status
                   </Button>
@@ -173,73 +167,23 @@ export function TeamCard({ team }: TeamCardProps) {
               </CardContent>
             </Card>
 
-            <Card className="bg-card border-border overflow-hidden">
-              <CardHeader className="bg-card/50 pb-3">
+            {/* Members Card */}
+            <Card className="bg-[#1a1a1a] text-white border-none shadow-sm">
+              <CardHeader className="pb-3">
                 <CardTitle className="text-base font-medium flex items-center gap-2">
                   <Users className="h-4 w-4 text-primary" />
                   Team Members
                 </CardTitle>
-                <CardDescription>People in your team</CardDescription>
+                <CardDescription className="text-muted-foreground">
+                  People in your team
+                </CardDescription>
               </CardHeader>
               <CardContent className="pt-4">
                 <ScrollArea className="h-[240px] pr-4">
                   <div className="space-y-4">
                     {team.allMembers.map((member, i) => (
-                      <div
-                        key={i}
-                        className="flex items-center justify-between group"
-                      >
-                        <div className="flex items-center gap-3">
-                          <Avatar className="h-9 w-9 border-0 bg-primary/10">
-                            <AvatarFallback className="text-primary bg-transparent">
-                              {getInitials(member.name)}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <p className="font-medium">{member.name}</p>
-                            <p className="text-xs text-muted-foreground">
-                              {member.usn}
-                            </p>
-                          </div>
-                        </div>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="opacity-0 group-hover:opacity-100 transition-opacity"
-                          onClick={() =>
-                            alert(`View profile of ${member.name}`)
-                          }
-                        >
-                          View
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                </ScrollArea>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="chat" className="mt-6">
-          <Card className="bg-card border-border overflow-hidden">
-            <CardHeader className="bg-card/50 pb-3">
-              <CardTitle className="text-base font-medium flex items-center gap-2">
-                <MessageCircle className="h-4 w-4 text-primary" />
-                Team Chat
-              </CardTitle>
-              <CardDescription>Connect with your team members</CardDescription>
-            </CardHeader>
-            <CardContent className="pt-4">
-              <ScrollArea className="h-[400px]">
-                <div className="space-y-4">
-                  {team.allMembers.map((member, i) => (
-                    <div
-                      key={i}
-                      className="flex items-center justify-between p-3 rounded-lg transition-colors hover:bg-accent/30 group"
-                    >
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-10 w-10 border-0 bg-primary/10">
+                      <div key={i} className="flex items-center gap-3">
+                        <Avatar className="h-9 w-9 border-0 bg-[#333]">
                           <AvatarFallback className="text-primary bg-transparent">
                             {getInitials(member.name)}
                           </AvatarFallback>
@@ -251,35 +195,78 @@ export function TeamCard({ team }: TeamCardProps) {
                           </p>
                         </div>
                       </div>
-                      <Button
-                        size="sm"
-                        className="gap-2"
-                        onClick={() =>
-                          alert(`Message to ${member.name} (${member.usn})`)
-                        }
-                      >
-                        <MessageCircle className="h-4 w-4" />
-                        Chat
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </ScrollArea>
-            </CardContent>
-          </Card>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        {/* --- Chat --- */}
+        <TabsContent value="chat" className="mt-6 relative">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4 }}
+          >
+            <Card className="bg-[#1a1a1a] text-white border-none relative shadow-sm">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-medium flex items-center gap-2">
+                  <MessageCircle className="h-4 w-4 text-primary" />
+                  Team Chat
+                </CardTitle>
+                <CardDescription className="text-muted-foreground">
+                  Connect with your team members
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-4 pb-20">
+                <ScrollArea className="h-[400px] pr-4">
+                  <div className="space-y-4">
+                    {team.allMembers.map((member, i) => (
+                      <div key={i} className="flex items-center gap-3">
+                        <Avatar className="h-9 w-9 border-0 bg-[#333]">
+                          <AvatarFallback className="text-primary bg-transparent">
+                            {getInitials(member.name)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-medium">{member.name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {member.usn}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </ScrollArea>
+
+                {/* Floating Chat Button */}
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  className="absolute bottom-4 right-4"
+                >
+                  <Button
+                    size="icon"
+                    className="rounded-full bg-primary hover:bg-primary/90 text-background shadow-xl"
+                    onClick={() => alert("Open group chat")}
+                  >
+                    <Plus className="h-5 w-5" />
+                  </Button>
+                </motion.div>
+              </CardContent>
+            </Card>
+          </motion.div>
         </TabsContent>
       </Tabs>
-    </div>
+    </motion.div>
   );
 }
 
 function getInitials(name: string): string {
   if (!name) return "U";
-
-  const parts = name.split(/\s+/);
-  if (parts.length > 1) {
-    return (parts[0][0] + parts[1][0]).toUpperCase();
-  }
-
-  return name.substring(0, 2).toUpperCase();
+  const parts = name.trim().split(/\s+/);
+  return parts.length > 1
+    ? (parts[0][0] + parts[1][0]).toUpperCase()
+    : name.substring(0, 2).toUpperCase();
 }
