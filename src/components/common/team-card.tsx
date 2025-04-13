@@ -14,6 +14,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Send } from "lucide-react";
 import {
   CalendarDays,
   ExternalLink,
@@ -30,6 +31,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { useSession } from "next-auth/react";
 
 interface TeamCardProps {
   team: {
@@ -43,9 +47,51 @@ interface TeamCardProps {
       usn: string;
     }>;
   };
+  managerId: string;
 }
 
-export function TeamCard({ team }: TeamCardProps) {
+export function TeamCard({ team, managerId }: TeamCardProps) {
+  const [isInputVisible, setIsInputVisible] = useState(false);
+  const [chatMessage, setChatMessage] = useState("");
+  const [messages, setMessages] = useState<any[]>([]);
+  const session = useSession();
+
+  const sendMessage = async () => {
+    if (!chatMessage) return;
+    try {
+      await axios.post("/api/chat", {
+        managerId: managerId,
+        teamId: team.groupId,
+        message: chatMessage,
+      });
+
+      setChatMessage("");
+      setIsInputVisible(false);
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
+  };
+
+  const fetchMessages = async () => {
+    try {
+      const response = await axios.get("/api/chat", {
+        params: {
+          managerId: managerId,
+          groupId: team.groupId,
+        },
+      });
+      setMessages(response.data.chat);
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchMessages();
+  }, [managerId, team.groupId]);
+
+  console.log(messages);
+
   return (
     <motion.div
       className="space-y-6 bg-gradient-to-b from-[#121212] to-[#1a1a1a] p-6 rounded-xl"
@@ -223,21 +269,50 @@ export function TeamCard({ team }: TeamCardProps) {
               <CardContent className="pt-4 pb-20">
                 <ScrollArea className="h-[400px] pr-4">
                   <div className="space-y-4">
-                    {team.allMembers.map((member, i) => (
-                      <div key={i} className="flex items-center gap-3">
-                        <Avatar className="h-9 w-9 border-0 bg-[#333]">
-                          <AvatarFallback className="text-primary bg-transparent">
-                            {getInitials(member.name)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="font-medium">{member.name}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {member.usn}
-                          </p>
+                    {messages.map((chat, i) => {
+                      // @ts-ignore
+                      const isMe = chat.email === session.data?.user?.email;
+                      return (
+                        <div
+                          key={i}
+                          className={`flex items-end gap-2 ${
+                            isMe ? "justify-end" : "justify-start"
+                          }`}
+                        >
+                          <div className="max-w-[70%]">
+                            <div
+                              className={`rounded-xl px-4 py-2 text-sm break-words shadow-sm ${
+                                isMe
+                                  ? "bg-primary text-white rounded-br-none ml-auto"
+                                  : "bg-muted text-black dark:text-white rounded-bl-none"
+                              }`}
+                            >
+                              {chat.msg}
+                            </div>
+
+                            <div className="flex flex-col">
+                              {!isMe && (
+                                <p className="text-xs text-muted-foreground">
+                                  {chat.email}
+                                </p>
+                              )}
+                              <span
+                                className={`text-[10px] block ${
+                                  isMe ? "text-right w-full" : "text-left"
+                                } text-muted-foreground`}
+                              >
+                                {new Date(
+                                  chat.sendAt.seconds * 1000
+                                ).toLocaleTimeString([], {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })}
+                              </span>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </ScrollArea>
 
@@ -249,10 +324,29 @@ export function TeamCard({ team }: TeamCardProps) {
                   <Button
                     size="icon"
                     className="rounded-full bg-primary hover:bg-primary/90 text-background shadow-xl"
-                    onClick={() => alert("Open group chat")}
+                    onClick={() => setIsInputVisible(true)}
                   >
                     <Plus className="h-5 w-5" />
                   </Button>
+
+                  {isInputVisible && (
+                    <div className="absolute bottom-16 right-4 flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={chatMessage}
+                        onChange={(e) => setChatMessage(e.target.value)}
+                        className="px-3 py-2 rounded-lg bg-white text-black"
+                        placeholder="Type your message..."
+                      />
+                      <Button
+                        size="sm"
+                        onClick={sendMessage}
+                        className="bg-primary text-white"
+                      >
+                        Send <Send className="ml-2 h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
                 </motion.div>
               </CardContent>
             </Card>

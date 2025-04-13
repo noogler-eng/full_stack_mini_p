@@ -14,6 +14,7 @@ import { motion } from "framer-motion";
 interface Team {
   topic: string;
   managerName: string;
+  managerId: string;
   groupId: string;
   userUSN: string;
   spreadsheetUrl?: string;
@@ -179,7 +180,10 @@ export default function UserDashboard() {
                 <EmptyTeamsState />
               </div>
             ) : (
-              <TeamCard team={userTeams[selectedTeamIndex]} />
+              <TeamCard
+                team={userTeams[selectedTeamIndex]}
+                managerId={userTeams[selectedTeamIndex].managerId}
+              />
             )}
           </motion.section>
         </div>
