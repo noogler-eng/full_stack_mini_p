@@ -1,12 +1,20 @@
 import axios from "axios";
 
-export async function createSpreadSheet(title: any) {
+export async function createSpreadSheet(title: any, teams = 20, size = 4) {
   const APP_SCRIPT_URL = process.env.NEXT_PUBLIC_APP_SCRIPT_URL!;
+
+  const groups: any[] = [];
+  for (let i = 0; i < teams; i++) {
+    groups.push({
+      groupNo: i + 1,
+      teamSize: size,
+    });
+  }
 
   try {
     const response = await axios.post(
       APP_SCRIPT_URL,
-      { title },
+      { title: title, groups: groups },
       {
         headers: {
           "Content-Type": "application/json",

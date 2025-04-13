@@ -27,13 +27,16 @@ import {
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import handleTeams from "@/utils/helper/handleTeams";
 
 interface Environment {
+  id: string;
   name: string;
   description: string;
   spreadsheetUrl: string;
   adminEmail: string;
   createdAt: string;
+  commit: boolean;
 }
 
 export default function Admin() {
@@ -231,7 +234,7 @@ export default function Admin() {
                       variant="outline"
                       className="bg-zinc-900 text-zinc-400 border-zinc-800 text-xs"
                     >
-                      {new Date(env.createdAt).toLocaleDateString()}
+                      {new Date(env.createdAt).toUTCString()}
                     </Badge>
                   </div>
                 </CardHeader>
@@ -263,6 +266,15 @@ export default function Admin() {
                         onClick={() => handleCopyLink(env.spreadsheetUrl)}
                       >
                         <Copy className="mr-2 h-3.5 w-3.5" /> Copy Link
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="bg-transparent border-zinc-800 text-zinc-300 hover:bg-zinc-900 hover:text-zinc-100"
+                        onClick={() => handleTeams(env.spreadsheetUrl, env.id)}
+                        disabled={env.commit ? true : false}
+                      >
+                        <Copy className="mr-2 h-3.5 w-3.5" /> Commit
                       </Button>
                       <Button
                         variant="outline"

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import options from "../auth/config";
-import db from "@/utils/db/firebase.config";
+import db from "@/utils/db/firebase";
 import {
   collection,
   addDoc,

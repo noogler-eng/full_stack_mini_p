@@ -1,6 +1,6 @@
 import GoogleProvider from "next-auth/providers/google";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import db from "@/utils/db/firebase.config";
+import db from "@/utils/db/firebase";
 
 const options = {
   providers: [
