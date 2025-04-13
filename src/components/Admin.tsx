@@ -28,6 +28,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import handleTeams from "@/utils/helper/handleTeams";
+import convertToDate from "@/utils/helper/formateDate";
 
 interface Environment {
   id: string;
@@ -219,14 +220,14 @@ export default function Admin() {
             </Dialog>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
             {environments.map((env, idx) => (
               <Card
                 key={idx}
                 className="bg-zinc-950 border border-zinc-800 hover:border-zinc-700 transition-all duration-200 overflow-hidden"
               >
                 <CardHeader className="pb-3">
-                  <div className="flex justify-between items-start">
+                  <div className="flex justify-between items-center">
                     <CardTitle className="text-lg font-semibold text-zinc-100">
                       {env.name}
                     </CardTitle>
@@ -234,7 +235,7 @@ export default function Admin() {
                       variant="outline"
                       className="bg-zinc-900 text-zinc-400 border-zinc-800 text-xs"
                     >
-                      {new Date(env.createdAt).toUTCString()}
+                      {new Date(convertToDate(env.createdAt)).toDateString()}
                     </Badge>
                   </div>
                 </CardHeader>
@@ -267,19 +268,23 @@ export default function Admin() {
                       >
                         <Copy className="mr-2 h-3.5 w-3.5" /> Copy Link
                       </Button>
+                      {env.commit ? (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="bg-transparent border-zinc-800 text-zinc-300"
+                          onClick={() =>
+                            handleTeams(env.spreadsheetUrl, env.id)
+                          }
+                        >
+                          Commit
+                        </Button>
+                      ) : null}
+
                       <Button
                         variant="outline"
                         size="sm"
-                        className="bg-transparent border-zinc-800 text-zinc-300"
-                        onClick={() => handleTeams(env.spreadsheetUrl, env.id)}
-                        disabled={env.commit ? true : false}
-                      >
-                        <Copy className="mr-2 h-3.5 w-3.5" /> Commit
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="bg-transparent border-zinc-800 text-zinc-300"
+                        className="bg-transparent border-zinc-800 text-zinc-300 hover:bg-zinc-900 hover:text-zinc-100"
                         onClick={async () => {
                           setLoading(true);
                           await axios.delete(`/api/manager?id=${env.id}`);
