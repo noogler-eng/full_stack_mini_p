@@ -25,6 +25,7 @@ const handleTeams = async (spreadsheetUrl: string, id: string) => {
     }
 
     const teams = json.data;
+    console.log('data: ', teams);
 
     const managerRef = doc(db, "manager", id);
     const managerSnap = await getDoc(managerRef);
@@ -34,15 +35,11 @@ const handleTeams = async (spreadsheetUrl: string, id: string) => {
       return { success: false, error: `Manager with ID ${id} does not exist` };
     }
 
-    // Create a batch for all write operations
     const batch = writeBatch(db);
 
-    // Add each team to the batch
     teams.forEach((team: any) => {
       const { groupNo, topic, members } = team;
       const groupRef = doc(db, "manager", id, "teams", `group${groupNo}`);
-
-      console.log(`Adding group${groupNo} to batch for manager ${id}`);
 
       batch.set(groupRef, {
         topic,
@@ -51,7 +48,6 @@ const handleTeams = async (spreadsheetUrl: string, id: string) => {
       });
     });
 
-    // Update the manager document in the same batch
     batch.set(
       managerRef,
       {
@@ -61,10 +57,7 @@ const handleTeams = async (spreadsheetUrl: string, id: string) => {
       { merge: true }
     );
 
-    // Commit the batch
     await batch.commit();
-
-    console.log("Teams batch committed successfully");
 
     return {
       success: true,
@@ -73,7 +66,6 @@ const handleTeams = async (spreadsheetUrl: string, id: string) => {
   } catch (error: any) {
     console.error("Error uploading teams:", error);
 
-    // More detailed error information
     const errorDetails = {
       message: error.message,
       code: error.code,

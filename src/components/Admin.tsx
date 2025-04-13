@@ -270,11 +270,23 @@ export default function Admin() {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="bg-transparent border-zinc-800 text-zinc-300 hover:bg-zinc-900 hover:text-zinc-100"
+                        className="bg-transparent border-zinc-800 text-zinc-300"
                         onClick={() => handleTeams(env.spreadsheetUrl, env.id)}
                         disabled={env.commit ? true : false}
                       >
                         <Copy className="mr-2 h-3.5 w-3.5" /> Commit
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="bg-transparent border-zinc-800 text-zinc-300"
+                        onClick={async () => {
+                          setLoading(true);
+                          await axios.delete(`/api/manager?id=${env.id}`);
+                          setLoading(false);
+                        }}
+                      >
+                        <Copy className="mr-2 h-3.5 w-3.5" /> Delete
                       </Button>
                       <Button
                         variant="outline"

@@ -11,6 +11,8 @@ import {
   query,
   where,
   getDocs,
+  getDoc,
+  deleteDoc,
 } from "firebase/firestore";
 import { createSpreadSheet } from "@/utils/helper/createSpreadSheet";
 
@@ -90,6 +92,55 @@ export async function GET(req: NextRequest) {
     }));
 
     return NextResponse.json(environments, { status: 200 });
+  } catch (err) {
+    console.error("Error fetching environments:", err);
+    return NextResponse.json(
+      { error: "Failed to fetch environments" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  const session = await getServerSession(options);
+  const { searchParams } = new URL(req.url);
+  const managerId = searchParams.get("id");
+
+  if (!session?.user?.email) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (!managerId) {
+    return NextResponse.json(
+      { error: "Missing managerId parameter" },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const managerRef = doc(db, "manager", managerId);
+    const manager = await getDoc(managerRef);
+
+    if (!manager.exists()) {
+      return NextResponse.json({ error: "Manager not found" }, { status: 404 });
+    }
+
+    const managerData = manager.data();
+    if (managerData.adminEmail !== session.user.email) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const teamsColRef = collection(db, "manager", managerId, "teams");
+    const teamDocs = await getDocs(teamsColRef);
+
+    const deletePromises = teamDocs.docs.map((teamDoc) =>
+      deleteDoc(teamDoc.ref)
+    );
+    await Promise.all(deletePromises);
+
+    await deleteDoc(managerRef);
+
+    return NextResponse.json({ msg: "deleted succesfully" });
   } catch (err) {
     console.error("Error fetching environments:", err);
     return NextResponse.json(

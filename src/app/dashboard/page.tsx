@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Shield, User } from "lucide-react";
 import Admin from "@/components/Admin";
+import UserComp from "@/components/User";
 
 export default function Dashboard() {
   const [active, setActive] = useState("admin");
@@ -37,14 +38,7 @@ export default function Dashboard() {
       {/* Main Content */}
       <main className="flex-1 p-10">
         {active === "admin" && <Admin />}
-        {active === "user" && (
-          <div>
-            <h1 className="text-3xl font-bold mb-4">User Panel</h1>
-            <p className="text-gray-400">
-              Collaborate on projects shared with you here.
-            </p>
-          </div>
-        )}
+        {active === "user" && <UserComp />}
       </main>
     </div>
   );
