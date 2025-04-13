@@ -37,7 +37,7 @@ interface Environment {
   spreadsheetUrl: string;
   adminEmail: string;
   createdAt: string;
-  commit: boolean;
+  teamsCreated: boolean;
 }
 
 export default function Admin() {
@@ -47,6 +47,8 @@ export default function Admin() {
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  console.log(environments);
 
   const fetchUserEnvironments = async () => {
     if (!session?.user?.email) return;
@@ -259,7 +261,7 @@ export default function Admin() {
                 </CardContent>
                 <CardFooter className="pt-2">
                   {env.spreadsheetUrl ? (
-                    <div className="flex gap-2 w-full flex justify-between">
+                    <div className="flex gap-2 w-full flex flex-wrap">
                       <Button
                         variant="outline"
                         size="sm"
@@ -268,16 +270,20 @@ export default function Admin() {
                       >
                         <Copy className="mr-2 h-3.5 w-3.5" /> Copy Link
                       </Button>
-                      {env.commit ? (
+                      {!env.teamsCreated ? (
                         <Button
                           variant="outline"
                           size="sm"
-                          className="bg-transparent border-zinc-800 text-zinc-300"
-                          onClick={() =>
-                            handleTeams(env.spreadsheetUrl, env.id)
-                          }
+                          className="bg-transparent border-zinc-800 text-zinc-300 hover:bg-zinc-900 hover:text-zinc-100"
+                          disabled={loading}
+                          onClick={() => {
+                            setLoading(true);
+                            console.log("wprkffkf");
+                            handleTeams(env.spreadsheetUrl, env.id);
+                            setLoading(false);
+                          }}
                         >
-                          Commit
+                          {loading ? "loading..." : "Commit"}
                         </Button>
                       ) : null}
 
