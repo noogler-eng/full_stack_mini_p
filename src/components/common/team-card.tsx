@@ -34,6 +34,8 @@ import {
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
+import { doc, onSnapshot } from "firebase/firestore";
+import db from "@/utils/db/firebase";
 
 interface TeamCardProps {
   team: {
@@ -72,23 +74,27 @@ export function TeamCard({ team, managerId }: TeamCardProps) {
     }
   };
 
-  const fetchMessages = async () => {
-    try {
-      const response = await axios.get("/api/chat", {
-        params: {
-          managerId: managerId,
-          groupId: team.groupId,
-        },
-      });
-      setMessages(response.data.chat);
-    } catch (error) {
-      console.error("Error fetching messages:", error);
-    }
-  };
-
   useEffect(() => {
-    fetchMessages();
+    if (!managerId || !team.groupId) return;
+
+    const groupDocRef = doc(db, "manager", managerId, "teams", team.groupId);
+
+    const unsubscribe = onSnapshot(groupDocRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        const chatArray = data.chat || [];
+        setMessages(chatArray);
+      } else {
+        console.warn("No such document!");
+      }
+    });
+
+    return () => unsubscribe();
   }, [managerId, team.groupId]);
+
+  // useEffect(() => {
+  //   fetchMessages();
+  // }, [managerId, team.groupId]);
 
   console.log(messages);
 
