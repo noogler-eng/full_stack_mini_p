@@ -42,7 +42,7 @@ const options = {
     },
   },
 
-  secret: process.env.NEXT_NEXTAUTH_SECRET!,
+  secret: process.env.NEXTAUTH_SECRET!,
 };
 
 export default options;
