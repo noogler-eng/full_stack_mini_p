@@ -15,7 +15,7 @@ const handleTeams = async (spreadsheetUrl: string, id: string) => {
   }
 
   try {
-    const endpoint = `${process.env.NEXT_PUBLIC_APP_SCRIPT_URL}?sheetId=${sheetId}`;
+    const endpoint = `${process.env.NEXT_APP_SCRIPT_URL}?sheetId=${sheetId}`;
     const res = await axios.get(endpoint);
     const json = res.data;
 
