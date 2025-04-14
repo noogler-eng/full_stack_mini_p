@@ -276,7 +276,6 @@ export function TeamCard({ team, managerId }: TeamCardProps) {
                 <ScrollArea className="h-[400px] pr-4">
                   <div className="space-y-4">
                     {messages.map((chat, i) => {
-                      // @ts-ignore
                       const isMe = chat.email === session.data?.user?.email;
                       return (
                         <div

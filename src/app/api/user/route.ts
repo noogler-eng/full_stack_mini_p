@@ -30,12 +30,14 @@ export async function GET() {
     const groupRef = groupDoc.ref;
     const envRef = groupRef?.parent?.parent;
 
-    // @ts-ignore
+    if (!envRef) {
+      return NextResponse.json({ error: "manager not found" }, { status: 401 });
+    }
+
     const envSnap = await getDoc(envRef);
     const envData = envSnap.data();
 
     matchedGroups.push({
-      //@ts-ignore
       managerId: envRef.id,
       managerName: envData?.name || "Unknown Env",
       spreadsheetUrl: envData?.spreadsheetUrl || null,

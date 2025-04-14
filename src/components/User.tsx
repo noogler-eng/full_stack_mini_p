@@ -205,8 +205,8 @@ function EmptyTeamsState() {
       </div>
       <h3 className="text-xl font-semibold mb-2 text-white">No teams found</h3>
       <p className="text-gray-400 max-w-md mb-4">
-        You aren't part of any teams yet. Teams will appear here once you've
-        been added to them.
+        {`You aren't part of any teams yet. Teams will appear here once you've
+        been added to them.`}
       </p>
     </motion.div>
   );
