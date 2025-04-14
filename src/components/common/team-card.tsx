@@ -34,7 +34,7 @@ import {
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import { collection, doc, onSnapshot } from "firebase/firestore";
+import { doc, onSnapshot } from "firebase/firestore";
 import db from "@/utils/db/firebase";
 
 interface TeamCardProps {
@@ -83,14 +83,14 @@ export function TeamCard({ team, managerId }: TeamCardProps) {
     const unsubscribe = onSnapshot(
       groupDocRef,
       (docSnap) => {
-        // if (docSnap.exists()) {
-        //   const data = docSnap.data();
-        //   const chatArray = Array.isArray(data?.chat) ? data.chat : [];
-        //   setMessages(chatArray);
-        // } else {
-        //   console.warn("No such document!");
-        //   setMessages([]);
-        // }
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          const chatArray = Array.isArray(data?.chat) ? data.chat : [];
+          setMessages(chatArray);
+        } else {
+          console.warn("No such document!");
+          setMessages([]);
+        }
       },
       (error) => {
         console.error("Snapshot listener error:", error);
