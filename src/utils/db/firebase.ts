@@ -1,5 +1,9 @@
 import { initializeApp } from "firebase/app";
-import { enableIndexedDbPersistence, getFirestore } from "firebase/firestore";
+import {
+  CACHE_SIZE_UNLIMITED,
+  enableIndexedDbPersistence,
+  initializeFirestore,
+} from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_API_KEY,
@@ -12,8 +16,10 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
+const db = initializeFirestore(app, {
+  cacheSizeBytes: CACHE_SIZE_UNLIMITED,
+  experimentalForceLongPolling: true,
+});
 enableIndexedDbPersistence(db).catch((err) => {
   console.error("Firebase persistence error:", err.code);
 });

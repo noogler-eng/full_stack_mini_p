@@ -34,7 +34,7 @@ import {
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import { doc, onSnapshot } from "firebase/firestore";
+import { collection, doc, onSnapshot } from "firebase/firestore";
 import db from "@/utils/db/firebase";
 
 interface TeamCardProps {
@@ -75,28 +75,30 @@ export function TeamCard({ team, managerId }: TeamCardProps) {
   };
 
   useEffect(() => {
-    if (!managerId || !team.groupId) return;
+    if (!managerId || !team?.groupId) return;
 
     const groupDocRef = doc(db, "manager", managerId, "teams", team.groupId);
+    console.log(groupDocRef);
 
-    const unsubscribe = onSnapshot(groupDocRef, (docSnap) => {
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        const chatArray = data.chat || [];
-        setMessages(chatArray);
-      } else {
-        console.warn("No such document!");
+    const unsubscribe = onSnapshot(
+      groupDocRef,
+      (docSnap) => {
+        // if (docSnap.exists()) {
+        //   const data = docSnap.data();
+        //   const chatArray = Array.isArray(data?.chat) ? data.chat : [];
+        //   setMessages(chatArray);
+        // } else {
+        //   console.warn("No such document!");
+        //   setMessages([]);
+        // }
+      },
+      (error) => {
+        console.error("Snapshot listener error:", error);
       }
-    });
+    );
 
     return () => unsubscribe();
-  }, [managerId, team.groupId]);
-
-  // useEffect(() => {
-  //   fetchMessages();
-  // }, [managerId, team.groupId]);
-
-  console.log(messages);
+  }, [managerId, team?.groupId]);
 
   return (
     <motion.div
