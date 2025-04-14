@@ -2,6 +2,7 @@ import axios from "axios";
 
 export async function createSpreadSheet(title: any, teams = 20, size = 4) {
   const APP_SCRIPT_URL = process.env.NEXT_APP_SCRIPT_URL!;
+  console.log('ZNNNNNN:', APP_SCRIPT_URL)
 
   const groups: any[] = [];
   for (let i = 0; i < teams; i++) {
